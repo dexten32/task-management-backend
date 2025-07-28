@@ -1,0 +1,67 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String      @id @default(cuid())
+  name         String
+  email        String      @unique
+  password     String?
+  role         Role        @default(EMPLOYEE)
+  approved     Boolean     @default(false)
+  isDeleted    Boolean     @default(false)
+  department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?
+
+  // Relations for tasks:             
+  assignedTasks   Task[] @relation("assignedTasks") // tasks assigned TO this user
+  assignedByTasks Task[] @relation("assignedByTasks") // tasks assigned BY this user
+
+  createdAt DateTime @default(now())
+}
+
+model Task {
+  id            String    @id @default(cuid())
+  title         String
+  description   String
+  assignedToId  String
+  assignedById  String
+  deadline      DateTime
+  status        String    @default("PENDING")
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  assignedTo    User      @relation("assignedTasks", fields: [assignedToId], references: [id])
+  assignedBy    User      @relation("assignedByTasks", fields: [assignedById], references: [id])
+
+  // New relation for logs
+  logs          TaskLog[]
+}
+
+model TaskLog {
+  id          String   @id @default(cuid())
+  description String
+  createdAt   DateTime @default(now())
+
+  // Relation to Task
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId      String
+}
+
+model Department {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  users     User[]
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  EMPLOYEE
+}
