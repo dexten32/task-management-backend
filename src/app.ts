@@ -17,7 +17,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "https://task-management-backend-iyjp.onrender.com",
+    origin: "https://task-management-frontend-gules.vercel.app",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
