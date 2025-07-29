@@ -94,7 +94,7 @@ export const getTasksController = async (req: Request, res: Response) => {
             name: true,
             id: true,
             department: { select: { name: true, id: true } },
-          }, // <-- ADD THIS
+          },
         },
         assignedBy: {
           select: { name: true, id: true },
@@ -121,7 +121,7 @@ export const getRecentTasks = async (req: Request, res: Response) => {
           select: {
             name: true,
             id: true,
-            department: { select: { name: true, id: true } }, // <-- ADD THIS LINE!
+            department: { select: { name: true, id: true } },
           },
         },
         assignedBy: {
@@ -145,7 +145,6 @@ export const getMyTasks = async (req: Request, res: Response) => {
     const tasks = await prisma.task.findMany({
       where: { assignedToId: userId },
       include: {
-        // Include user data
         assignedTo: {
           select: { name: true, id: true },
         },
@@ -170,7 +169,7 @@ export const getDelayedTasks = async (req: Request, res: Response) => {
       where: {
         status: "delayed",
         deadline: {
-          lt: now, // 'lt' stands for less than
+          lt: now,
         },
       },
       include: {
@@ -182,7 +181,7 @@ export const getDelayedTasks = async (req: Request, res: Response) => {
         },
       },
       orderBy: {
-        deadline: "asc", // Order by deadline, oldest first
+        deadline: "asc",
       },
     });
     res.status(200).json({ tasks });
@@ -215,7 +214,7 @@ export const updateTaskStatus = async (req: Request, res: Response) => {
 };
 
 export const getPreviousTasks = async (req: Request, res: Response) => {
-  const userId = req.user?.id; // assuming your JWT middleware adds this
+  const userId = req.user?.id;
 
   if (!userId) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -231,8 +230,7 @@ export const getPreviousTasks = async (req: Request, res: Response) => {
 };
 
 export const getTaskLimit = async (req: Request, res: Response) => {
-  // You may want to get adminId from req.user or req.query, adjust as needed
-  const adminId = req.user?.id; // assuming req.user is populated by authenticateJWT
+  const adminId = req.user?.id;
   const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 3;
   if (!adminId) {
     return res.status(400).json({ error: "Missing adminId" });
@@ -253,9 +251,9 @@ export const getTaskById = async (
       include: {
         logs: {
           orderBy: {
-            createdAt: "asc", // Or 'desc' depending on your desired display order
+            createdAt: "asc",
           },
-        }, // Include logs with ascending order by createdAt
+        },
         assignedBy: true,
         assignedTo: {
           include: {
@@ -267,7 +265,7 @@ export const getTaskById = async (
 
     if (!task) return res.status(404).json({ message: "Task not found" });
 
-    res.json(task); // This will now include the logs array
+    res.json(task);
   } catch (error) {
     console.error("Failed to get task:", error);
     res.status(500).json({ message: "Error fetching task" });
