@@ -17,7 +17,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://task-management-backend-iyjp.onrender.com",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
